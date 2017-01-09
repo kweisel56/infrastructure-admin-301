@@ -1,0 +1,743 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_vm_pas_app1_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_pas_db1_adminPassword": {
+            "defaultValue": null,
+            "type": "SecureString"
+        },
+        "virtualMachines_vm_pas_app1_name": {
+            "defaultValue": "vm-pas-app1",
+            "type": "String"
+        },
+        "virtualMachines_vm_pas_db1_name": {
+            "defaultValue": "vm-pas-db1",
+            "type": "String"
+        },
+        "networkInterfaces_vm_pas_app1575_name": {
+            "defaultValue": "vm-pas-app1575",
+            "type": "String"
+        },
+        "networkInterfaces_vm_pas_db1501_name": {
+            "defaultValue": "vm-pas-db1501",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_eu2_be_pas_d01_name": {
+            "defaultValue": "nsg-eu2-be-pas-d01",
+            "type": "String"
+        },
+        "networkSecurityGroups_nsg_eu2_fe_pas_d01_name": {
+            "defaultValue": "nsg-eu2-fe-pas-d01",
+            "type": "String"
+        },
+        "publicIPAddresses_pip_pas_app1_name": {
+            "defaultValue": "pip-pas-app1",
+            "type": "String"
+        },
+        "publicIPAddresses_pip_pas_db1_name": {
+            "defaultValue": "pip-pas-db1",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_eu2_pas_d01_name": {
+            "defaultValue": "vnet-eu2-pas-d01",
+            "type": "String"
+        },
+        "storageAccounts_saeu2pasapp01d01_name": {
+            "defaultValue": "saeu2pasapp01d01",
+            "type": "String"
+        },
+        "storageAccounts_saeu2pasdb01d01_name": {
+            "defaultValue": "saeu2pasdb01d01",
+            "type": "String"
+        },
+        "storageAccounts_saeu2pasdiagd01_name": {
+            "defaultValue": "saeu2pasdiagd01",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Compute/virtualMachines/vm-pas-app1'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_pas_app1_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus2",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "RedHat",
+                        "offer": "RHEL",
+                        "sku": "6.8",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_pas_app1_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_saeu2pasapp01d01_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_pas_app1_name'),'2016107163349.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_pas_app1_name')]",
+                    "adminUsername": "superadmin",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_pas_app1_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_pas_app1575_name'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_saeu2pasapp01d01_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_pas_app1575_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Compute/virtualMachines/vm-pas-db1'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_vm_pas_db1_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "eastus2",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftSQLServer",
+                        "offer": "SQL2012SP3-WS2012R2",
+                        "sku": "Standard",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_vm_pas_db1_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_saeu2pasdb01d01_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_pas_db1_name'),'2016107162154.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "name": "[concat(parameters('virtualMachines_vm_pas_db1_name'),'-disk-1')]",
+                            "createOption": "Empty",
+                            "vhd": {
+                                "uri": "[concat('https', '://', parameters('storageAccounts_saeu2pasdb01d01_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_vm_pas_db1_name'),'-disk-1-2016107162154.vhd'))]"
+                            },
+                            "caching": "ReadOnly",
+                            "diskSizeGB": 1023
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_vm_pas_db1_name')]",
+                    "adminUsername": "superadmin",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_vm_pas_db1_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_pas_db1501_name'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_saeu2pasdb01d01_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_vm_pas_db1501_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/networkInterfaces/vm-pas-app1575'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_pas_app1575_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.248.248.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_pas_app1_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_eu2_pas_d01_name')), '/subnets/subnet-eu2-fe-pas-d01')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_pas_app1_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_eu2_pas_d01_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/networkInterfaces/vm-pas-db1501'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_vm_pas_db1501_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.248.248.36",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_pas_db1_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_eu2_pas_d01_name')), '/subnets/subnet-eu2-be-pas-d01')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_pip_pas_db1_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_vnet_eu2_pas_d01_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/networkSecurityGroups/nsg-eu2-be-pas-d01'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_nsg_eu2_be_pas_d01_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allowSQL-FE",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "10.248.248.0/22",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowRDP-Mahape",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 110,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSQL-Mahape",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 111,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowRDP-Pune",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 120,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSQL-Pune",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 121,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowRDP-Galstonbury",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 130,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSQL-Galstonbury",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 131,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowRDP-home",
+                        "properties": {
+                            "description": "Allow RDP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "66.18.44.246",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 140,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSQL-home",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "66.18.44.246",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 141,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSQL-Core",
+                        "properties": {
+                            "description": "Allow SQL",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1433",
+                            "sourceAddressPrefix": "10.248.255.0/26",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 160,
+                            "direction": "Inbound"
+                        }
+                    },    
+                    {
+                        "name": "allowWinRM-Core",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "5986",
+                            "sourceAddressPrefix": "10.248.255.0/26",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 161,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowWinRM-Galstonbury",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "5986",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 132,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowWinRM-Unum",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "5986",
+                            "sourceAddressPrefix": "204.10.44.254",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 171,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/networkSecurityGroups/nsg-eu2-fe-pas-d01'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_nsg_eu2_fe_pas_d01_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "allowSSH-AdminCore",
+                        "properties": {
+                            "description": "Allow SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "10.248.255.0/26",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSSH-Mahape",
+                        "properties": {
+                            "description": "Allow SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 110,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTP-Mahape",
+                        "properties": {
+                            "description": "Allow HTTP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 111,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTPS-Mahape",
+                        "properties": {
+                            "description": "Allow HTTPS",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 112,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allow8080-Mahape",
+                        "properties": {
+                            "description": "Allow 8080",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8080",
+                            "sourceAddressPrefix": "115.113.120.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 113,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSSH-Pune",
+                        "properties": {
+                            "description": "Allow SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 120,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTP-Pune",
+                        "properties": {
+                            "description": "Allow HTTP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 121,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTPS-Pune",
+                        "properties": {
+                            "description": "Allow HTTPS",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 122,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allow8080-Pune",
+                        "properties": {
+                            "description": "Allow 8080",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8080",
+                            "sourceAddressPrefix": "59.160.71.0/25",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 123,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowSSH-Galstonbury",
+                        "properties": {
+                            "description": "Allow SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 130,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTP-Galstonbury",
+                        "properties": {
+                            "description": "Allow HTTP",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 131,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allowHTTPS-Galstonbury",
+                        "properties": {
+                            "description": "Allow HTTPS",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 132,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "allow8080-Galstonbury",
+                        "properties": {
+                            "description": "Allow 8080",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8080",
+                            "sourceAddressPrefix": "208.69.87.146",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 133,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/publicIPAddresses/pip-pas-app1'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_pip_pas_app1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/publicIPAddresses/pip-pas-db1'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_pip_pas_db1_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Network/virtualNetworks/vnet-eu2-pas-d01'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_vnet_eu2_pas_d01_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "eastus2",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.248.248.0/26"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "subnet-eu2-fe-pas-d01",
+                        "properties": {
+                            "addressPrefix": "10.248.248.0/27",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_eu2_fe_pas_d01_name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "subnet-eu2-be-pas-d01",
+                        "properties": {
+                            "addressPrefix": "10.248.248.32/28",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_eu2_be_pas_d01_name'))]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_eu2_fe_pas_d01_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_nsg_eu2_be_pas_d01_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Storage/storageAccounts/saeu2pasapp01d01'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_saeu2pasapp01d01_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Storage/storageAccounts/saeu2pasdb01d01'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_saeu2pasdb01d01_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/8a62a5e2-d480-4382-a52f-af8496769d8d/resourceGroups/rg-eu2-pas-d01/providers/Microsoft.Storage/storageAccounts/saeu2pasdiagd01'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_saeu2pasdiagd01_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "eastus2",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        }
+    ]
+}
